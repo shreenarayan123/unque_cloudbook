@@ -8,13 +8,13 @@ const bookAppointment = async (req, res) => {
         const { professorId, timeSlot } = req.body;
         const studentId = req.user._id;
 
-        // Check if professor exists
+        // Check professor 
         const professor = await Professor.findById(professorId);
         if (!professor) {
             return res.status(404).json({ error: 'Professor not found' });
         }
 
-        // Check if the time slot is available
+        // Check slot  available
         const availableSlot = await TimeSlot.findOne({
             professor: professorId,
             start: { $lte: new Date(timeSlot) },
@@ -26,7 +26,7 @@ const bookAppointment = async (req, res) => {
             return res.status(400).json({ error: 'Time slot not available' });
         }
 
-        // Check if student already has an appointment at this time
+       
         const existingAppointment = await Appointment.findOne({
             student: studentId,
             timeSlot: new Date(timeSlot),
@@ -37,7 +37,7 @@ const bookAppointment = async (req, res) => {
             return res.status(400).json({ error: 'You already have an appointment at this time' });
         }
 
-        // Create the appointment
+       
         const appointment = new Appointment({
             professor: professorId,
             student: studentId,
@@ -47,11 +47,11 @@ const bookAppointment = async (req, res) => {
 
         await appointment.save();
 
-        // Mark the time slot as booked
+        //  slot booked
         availableSlot.isBooked = true;
         await availableSlot.save();
 
-        // Populate the appointment with user details
+        
         await appointment.populate('professor', 'name email');
         await appointment.populate('student', 'name email');
 
@@ -65,7 +65,7 @@ const bookAppointment = async (req, res) => {
     }
 };
 
-// Get student's appointments
+
 const getStudentAppointments = async (req, res) => {
     try {
         const studentId = req.user._id;
@@ -86,7 +86,7 @@ const getStudentAppointments = async (req, res) => {
     }
 };
 
-// Get professor's appointments
+
 const getProfessorAppointments = async (req, res) => {
     try {
         const professorId = req.user._id;
@@ -107,13 +107,13 @@ const getProfessorAppointments = async (req, res) => {
     }
 };
 
-// Cancel appointment (Professor only)
+// Cancel appointment 
 const cancelAppointment = async (req, res) => {
     try {
         const { appointmentId } = req.params;
         const professorId = req.user._id;
 
-        // Find the appointment
+        
         const appointment = await Appointment.findOne({
             _id: appointmentId,
             professor: professorId,
@@ -124,11 +124,11 @@ const cancelAppointment = async (req, res) => {
             return res.status(404).json({ error: 'Appointment not found or already cancelled' });
         }
 
-        // Update appointment status
+        // Update app status
         appointment.status = 'cancelled';
         await appointment.save();
 
-        // Make the time slot available again
+       
         await TimeSlot.findOneAndUpdate({
             professor: professorId,
             start: { $lte: appointment.timeSlot },
@@ -149,7 +149,7 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
-// Get all appointments (for testing purposes)
+// Get all
 const getAllAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find()

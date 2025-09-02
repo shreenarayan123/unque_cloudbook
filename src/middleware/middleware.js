@@ -3,11 +3,11 @@ import { z } from 'zod';
 import Student from '../model/student.js';
 import Professor from '../model/professor.js';
 
-// JWT Authentication Middleware
+
 const authenticateToken = async (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+        const token = authHeader && authHeader.split(' ')[1]; 
 
         if (!token) {
             return res.status(401).json({ error: 'Access token required' });
@@ -15,7 +15,7 @@ const authenticateToken = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // Find user based on role
+        
         let user;
         if (decoded.role === 'student') {
             user = await Student.findById(decoded.id).select('-password');
@@ -35,7 +35,7 @@ const authenticateToken = async (req, res, next) => {
     }
 };
 
-// Role-based authorization middleware
+
 const authorize = (roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.userRole)) {
@@ -45,7 +45,7 @@ const authorize = (roles) => {
     };
 };
 
-// Zod validation schemas
+
 const registerSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Invalid email format'),
@@ -69,7 +69,7 @@ const timeSlotSchema = z.object({
     end: z.string().datetime('Invalid end datetime format')
 });
 
-// Validation middleware
+// Validation 
 const validateRequest = (schema) => {
     return (req, res, next) => {
         try {

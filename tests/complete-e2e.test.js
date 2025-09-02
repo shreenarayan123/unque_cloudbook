@@ -17,13 +17,13 @@ dotenv.config({ path: path.join(__dirname, '../.env.test') });
 
 
 
-// Create Express app 
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/appointments', appointmentRoutes);
 app.use('/api/v1/availability', availabilityRoutes);
@@ -33,19 +33,19 @@ describe('Complete Appointment Booking E2E Test', () => {
     let studentA1Id, studentA2Id, professorP1Id;
 
     beforeAll(async () => {
-        // Connect to test database with unique name
+        
         const uniqueDBName = `test_complete_${Date.now().toString().slice(-6)}`;
         const testURI = process.env.MONGODB_URI.replace('unque_cloudbook_test', uniqueDBName);
         await mongoose.connect(testURI);
     });
 
     afterAll(async () => {
-        // Close database connection
+       
         await mongoose.connection.close();
     });
 
     beforeEach(async () => {
-        // Clean database before each test
+        
         await mongoose.connection.db.dropDatabase();
     });
 
@@ -233,13 +233,13 @@ describe('Complete Appointment Booking E2E Test', () => {
         expect(studentResponse.status).toBe(201);
         expect(studentResponse.body.token).toBeDefined();
 
-        // Test unauthorized access
+        //  unauthorized access
         const unauthorizedResponse = await request(app)
             .get('/api/v1/appointments/my-appointments');
 
         expect(unauthorizedResponse.status).toBe(401);
 
-        // Test protected route access
+        //  protected route access
         const protectedResponse = await request(app)
             .get('/api/v1/auth/profile')
             .set('Authorization', `Bearer ${studentResponse.body.token}`);

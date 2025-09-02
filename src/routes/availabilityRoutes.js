@@ -10,7 +10,7 @@ import { authenticateToken, authorize, validateRequest, schemas } from '../middl
 
 const router = express.Router();
 
-// Add availability (Professors only)
+
 router.post('/add', 
     authenticateToken, 
     authorize(['professor']), 
@@ -18,26 +18,26 @@ router.post('/add',
     addAvailability
 );
 
-// Get specific professor's availability (Public - for students to view)
+
 router.get('/professor/:professorId', 
     authenticateToken,
     getProfessorAvailability
 );
 
-// Get all professors with their availability student
+
 router.get('/all', 
     authenticateToken,
     getAllProfessorsAvailability
 );
 
-// Get own availability (Professors only)
+
 router.get('/my-availability', 
     authenticateToken, 
     authorize(['professor']), 
     getMyAvailability
 );
 
-// Remove availability (Professors only)
+
 router.delete('/remove/:timeSlotId', 
     authenticateToken, 
     authorize(['professor']), 

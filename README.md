@@ -9,6 +9,7 @@ A comprehensive appointment booking system that allows students to book appointm
 - **Professor Availability Management**: Professors can set their available time slots
 - **Appointment Booking**: Students can book available time slots
 - **Appointment Cancellation**: Professors can cancel appointments
+- **Real-time Availability**: Time slots are automatically marked as unavailable when booked
 - **Data Validation**: Comprehensive input validation using Zod
 - **E2E Testing**: Complete end-to-end test coverage
 
@@ -204,6 +205,47 @@ GET /appointments/all
 Authorization: Bearer <token>
 ```
 
+## 🗃️ Database Schema
+
+### User Models
+
+#### Student
+```javascript
+{
+  email: String (required, unique),
+  name: String (required),
+  password: String (required, hashed)
+}
+```
+
+#### Professor  
+```javascript
+{
+  email: String (required, unique),
+  name: String (required),
+  password: String (required, hashed)
+}
+```
+
+#### TimeSlot
+```javascript
+{
+  professor: ObjectId (ref: Professor, required),
+  start: Date (required),
+  end: Date (required), 
+  isBooked: Boolean (default: false)
+}
+```
+
+#### Appointment
+```javascript
+{
+  professor: ObjectId (ref: Professor, required),
+  student: ObjectId (ref: Student, required),
+  timeSlot: Date (required),
+  status: String (enum: ['booked', 'cancelled'], default: 'booked')
+}
+```
 
 ## 🔐 Security Features
 
@@ -213,6 +255,29 @@ Authorization: Bearer <token>
 - **Input Validation**: Comprehensive request validation using Zod schemas
 - **Error Handling**: Proper error responses without exposing sensitive information
 
+## 🚦 Status Codes
+
+- `200` - Success
+- `201` - Created successfully
+- `400` - Bad request / Validation error
+- `401` - Unauthorized / Authentication required
+- `403` - Forbidden / Insufficient permissions
+- `404` - Not found
+- `500` - Internal server error
+
+## 📝 Error Response Format
+
+```json
+{
+  "error": "Error message",
+  "details": [
+    {
+      "field": "fieldName",
+      "message": "Specific validation error"
+    }
+  ]
+}
+```
 
 ## 🧪 E2E Test Coverage
 
@@ -242,3 +307,56 @@ The comprehensive E2E test suite covers:
    - Double booking prevention
    - Unauthorized access prevention
    - Role-based access control
+
+## 🎯 Code Quality
+
+- **Clean Architecture**: Separation of concerns with controllers, routes, and middleware
+- **Error Handling**: Comprehensive error handling throughout the application
+- **Input Validation**: Zod schemas for request validation
+- **Documentation**: Well-documented code and API endpoints
+- **Testing**: Complete E2E test coverage
+- **Security**: Best practices for authentication and authorization
+
+## 🚀 Production Deployment
+
+1. **Environment Setup**: Configure production environment variables
+2. **Database**: Set up MongoDB Atlas or production MongoDB instance
+3. **Security**: Use strong JWT secrets and enable HTTPS
+4. **Monitoring**: Add logging and monitoring solutions
+5. **Scaling**: Consider load balancing for high traffic
+
+## 📱 Frontend Integration
+
+The API is designed to work with any frontend framework. Example integration:
+
+```javascript
+// Login
+const loginResponse = await fetch('/api/v1/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123',
+    role: 'student'
+  })
+});
+
+const { token } = await loginResponse.json();
+
+// Book appointment
+const bookingResponse = await fetch('/api/v1/appointments/book', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    professorId: 'professor-id',
+    timeSlot: '2024-12-25T10:30:00.000Z'
+  })
+});
+```
+
+## 📞 Support
+
+For any questions or issues, please refer to the comprehensive test suite in `tests/e2e/appointment-flow.test.js` which demonstrates all functionality and serves as living documentation.

@@ -4,7 +4,7 @@ import { authenticateToken, validateRequest, schemas } from '../middleware/middl
 
 const router = express.Router();
 
-// Auth routes
+
 router.post('/register', validateRequest(schemas.registerSchema), register);
 router.post('/login', validateRequest(schemas.loginSchema), login);
 router.get('/profile', authenticateToken, getProfile);

@@ -1,7 +1,7 @@
 import TimeSlot from '../model/timeslot.js';
 import Professor from '../model/professor.js';
 
-// Add availability (Professor only)
+// Add availability 
 const addAvailability = async (req, res) => {
     try {
         const { start, end } = req.body;
@@ -10,7 +10,7 @@ const addAvailability = async (req, res) => {
         const startDate = new Date(start);
         const endDate = new Date(end);
 
-        // Validate dates
+      
         if (startDate >= endDate) {
             return res.status(400).json({ error: 'Start time must be before end time' });
         }
@@ -34,7 +34,7 @@ const addAvailability = async (req, res) => {
             return res.status(400).json({ error: 'Time slot overlaps with existing availability' });
         }
 
-        // Create new time slot
+      
         const timeSlot = new TimeSlot({
             professor: professorId,
             start: startDate,
@@ -55,12 +55,12 @@ const addAvailability = async (req, res) => {
     }
 };
 
-// Get professor's availability
+
 const getProfessorAvailability = async (req, res) => {
     try {
         const { professorId } = req.params;
 
-        // Check if professor exists
+      
         const professor = await Professor.findById(professorId);
         if (!professor) {
             return res.status(404).json({ error: 'Professor not found' });
@@ -87,7 +87,7 @@ const getProfessorAvailability = async (req, res) => {
     }
 };
 
-// Get all professors with their availability
+
 const getAllProfessorsAvailability = async (req, res) => {
     try {
         const professors = await Professor.find().select('-password');
@@ -120,7 +120,7 @@ const getAllProfessorsAvailability = async (req, res) => {
     }
 };
 
-// Get own availability (for professor to see their slots)
+
 const getMyAvailability = async (req, res) => {
     try {
         const professorId = req.user._id;
@@ -140,7 +140,7 @@ const getMyAvailability = async (req, res) => {
     }
 };
 
-// Remove availability (Professor only)
+
 const removeAvailability = async (req, res) => {
     try {
         const { timeSlotId } = req.params;
